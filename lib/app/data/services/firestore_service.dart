@@ -1,0 +1,42 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class FirestoreService {
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String get uid => _auth.currentUser!.uid;
+
+  Future<void> createUser(String name, String email) async {
+    await _db.collection('users').doc(uid).set({
+      'name': name,
+      'email': email,
+    });
+  }
+
+  Future<void> addToCart(Map<String, dynamic> item) async {
+    await _db.collection('users').doc(uid).collection('carts').add(item);
+  }
+
+  Stream<QuerySnapshot> getCartStream() {
+    return _db.collection('users').doc(uid).collection('carts').snapshots();
+  }
+
+  Future<void> removeCartItem(String docId) async {
+    await _db.collection('users').doc(uid).collection('carts').doc(docId).delete();
+  }
+
+  Future<void> updateCartQty(String docId, int newQty) async {
+    if (newQty < 1) return;
+    await _db.collection('users').doc(uid).collection('carts').doc(docId).update({'qty': newQty});
+  }
+
+  Future<void> createOrder(Map<String, dynamic> orderData) async {
+    await _db.collection('orders').add(orderData);
+    // Clear cart after checkout
+    var cartDocs = await _db.collection('users').doc(uid).collection('carts').get();
+    for (var doc in cartDocs.docs) {
+      await doc.reference.delete();
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "873448448826",
+    "project_id": "shirtshop-87d61",
+    "storage_bucket": "shirtshop-87d61.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873448448826:android:06d4f6ca987c47e53e6603",
+        "android_client_info": {
+          "package_name": "com.example.serkom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDS9iIQnPkMaBMIBqQKH5em1jux_JRFInc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
