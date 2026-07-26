@@ -39,4 +39,20 @@ class FirestoreService {
       await doc.reference.delete();
     }
   }
+  
+  Future<void> toggleFavorite(int productId) async {
+    var ref = _db.collection('users').doc(uid).collection('favorites').doc(productId.toString());
+    var doc = await ref.get();
+    if (doc.exists) {
+      await ref.delete();
+    } else {
+      await ref.set({'product_id': productId, 'created_at': FieldValue.serverTimestamp()});
+    }
+  }
+
+  Stream<List<int>> getFavoritesStream() {
+    return _db.collection('users').doc(uid).collection('favorites').snapshots().map(
+      (snapshot) => snapshot.docs.map((doc) => doc['product_id'] as int).toList()
+    );
+  }
 }

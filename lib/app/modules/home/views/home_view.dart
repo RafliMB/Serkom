@@ -97,14 +97,24 @@ class HomeView extends GetView<HomeController> {
                           Positioned(
                             top: 8,
                             right: 8,
-                            child: Container(
-                              padding: const EdgeInsets.all(6.0),
-                              decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.surface,
-                                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                            child: GestureDetector(
+                              onTap: () => controller.toggleFavorite(product.id),
+                              child: Container(
+                                padding: const EdgeInsets.all(6.0),
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.surface,
+                                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                                ),
+                                child: Obx(() {
+                                  bool isFav = controller.favoriteIds.contains(product.id);
+                                  return Icon(
+                                    isFav ? Icons.favorite : Icons.favorite_border,
+                                    color: isFav ? AppColors.primary : AppColors.textSecondary,
+                                    size: 18,
+                                  );
+                                }),
                               ),
-                              child: const Icon(Icons.favorite_border, color: AppColors.primary, size: 18),
                             ),
                           )
                         ],
