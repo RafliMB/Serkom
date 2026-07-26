@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../routes/app_pages.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -67,7 +68,7 @@ class HomeView extends GetView<HomeController> {
           itemBuilder: (context, index) {
             final product = controller.products[index];
             return GestureDetector(
-              onTap: () => Get.toNamed('/product_detail', arguments: product),
+              onTap: () => Get.toNamed(Routes.PRODUCT_DETAIL, arguments: product),
               child: Container(
                 decoration: BoxDecoration(
                   color: AppColors.surface,
