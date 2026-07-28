@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import '../controllers/cart_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
@@ -26,21 +26,15 @@ class CartView extends GetView<CartController> {
           onPressed: () => Get.back(),
         ),
       ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: controller.getCartStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Obx(() {
+          if (controller.isLoading.value) {
             return const Center(child: CircularProgressIndicator(color: AppColors.primary));
           }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('Keranjang Anda kosong.', style: AppTextStyles.productTitle));
-          }
+          if (controller.cartItems.isEmpty) {
+            return Center(child: Text('Keranjang Anda kosong.', style: AppTextStyles.productTitle));}
 
-          var cartDocs = snapshot.data!.docs;
-          
-          // PERBAIKAN: Mengubah 'sum' menjadi 'totalSum' untuk menghindari bentrok nama variabel
-          double totalAmount = cartDocs.fold(0, (totalSum, doc) {
+          double totalAmount = controller.cartItems.fold(0, (totalSum, doc) {
             var data = doc.data() as Map<String, dynamic>;
             return totalSum + (data['price'] * data['qty']);
           });
@@ -49,10 +43,11 @@ class CartView extends GetView<CartController> {
             children: [
               ListView.builder(
                 padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 120),
-                itemCount: cartDocs.length,
+                itemCount: controller.cartItems.length,
                 itemBuilder: (context, index) {
-                  var data = cartDocs[index].data() as Map<String, dynamic>;
-                  String docId = cartDocs[index].id;
+                  var doc = controller.cartItems[index];
+                  var data = doc.data() as Map<String, dynamic>;
+                  String docId = doc.id;
                   
                   return Container(
                     margin: const EdgeInsets.only(bottom: 16),
@@ -156,7 +151,7 @@ class CartView extends GetView<CartController> {
                           ],
                         ),
                         ElevatedButton(
-                          onPressed: () => controller.goToCheckout(cartDocs),
+                          onPressed: () => controller.goToCheckout(),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),

@@ -62,10 +62,10 @@ class RegisterView extends GetView<RegisterController> {
               ),
               const SizedBox(height: 16),
               
-              // Password Field
-              TextField(
+              // Password Field (Dengan fitur visibilitas)
+              Obx(() => TextField(
                 controller: controller.passwordController,
-                obscureText: true,
+                obscureText: controller.isObscurePassword.value, 
                 decoration: InputDecoration(
                   hintText: 'Password',
                   hintStyle: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
@@ -73,8 +73,41 @@ class RegisterView extends GetView<RegisterController> {
                   fillColor: AppColors.surface,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      controller.isObscurePassword.value ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      color: AppColors.textSecondary,
+                    ),
+                    onPressed: () {
+                      controller.isObscurePassword.value = !controller.isObscurePassword.value;
+                    },
+                  ),
                 ),
-              ),
+              )),
+              const SizedBox(height: 16),
+
+              // Confirm Password Field (Baru)
+              Obx(() => TextField(
+                controller: controller.confirmPasswordController,
+                obscureText: controller.isObscureConfirmPassword.value, 
+                decoration: InputDecoration(
+                  hintText: 'Confirm Password',
+                  hintStyle: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      controller.isObscureConfirmPassword.value ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      color: AppColors.textSecondary,
+                    ),
+                    onPressed: () {
+                      controller.isObscureConfirmPassword.value = !controller.isObscureConfirmPassword.value;
+                    },
+                  ),
+                ),
+              )),
               const SizedBox(height: 40),
               
               // CTA Button Register

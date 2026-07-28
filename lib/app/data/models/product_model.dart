@@ -17,11 +17,10 @@ class ProductModel {
     return ProductModel(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
-      price: (json['price'] ?? 0).toDouble(),
+      price: double.tryParse(json['price'].toString()) ?? 0.0,
       description: json['description'] ?? '',
       category: json['category'] ?? '',
       image: json['image'] ?? '',
-      // PERBAIKAN DI SINI: Pastikan aman dan dikonversi ke double
       rating: json['rating'] != null && json['rating']['rate'] != null 
           ? (json['rating']['rate'] as num).toDouble() 
           : 0.0,

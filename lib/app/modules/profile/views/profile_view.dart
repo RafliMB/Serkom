@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../../routes/app_pages.dart'; // Ditambahkan untuk akses rute navigasi
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -32,27 +33,24 @@ class ProfileView extends GetView<ProfileController> {
             // ATURAN WAJIB: Dilarang menggunakan package image picker. Menggunakan aset lokal.
             Container(
               padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.surfaceVariant,
-              ),
-              child: const CircleAvatar(
+              decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.surfaceVariant),
+              child: Obx(() => CircleAvatar(
                 radius: 60,
-                backgroundImage: AssetImage('assets/images/default_profile.png'), 
+                backgroundImage: AssetImage(controller.userAvatar.value), 
                 backgroundColor: AppColors.surface,
-              ),
+              )),
             ),
             const SizedBox(height: 16),
-            Text(controller.dummyName, style: AppTextStyles.appBarTitle),
-            Text(controller.dummyEmail, style: AppTextStyles.body.copyWith(color: AppColors.textSecondary)),
+            Obx(() => Text(controller.userName.value, style: AppTextStyles.appBarTitle)),
+            Obx(() => Text(controller.userEmail.value, style: AppTextStyles.body.copyWith(color: AppColors.textSecondary))),
             
             const SizedBox(height: 40),
             
-            // Menu Items
-            _buildProfileMenu(Icons.person_outline, 'Personal Details'),
-            _buildProfileMenu(Icons.location_on_outlined, 'My Address'),
-            _buildProfileMenu(Icons.notifications_none, 'Notifications'),
-            _buildProfileMenu(Icons.payment, 'Payment Methods'),
+            // Menu Items 
+            _buildProfileMenu(Icons.person_outline, 'Personal Details', () => controller.goToPersonalDetails()),
+            
+            // MENU BARU: Produk Favorit
+            _buildProfileMenu(Icons.favorite_border, 'Produk Favorit', () => Get.toNamed(Routes.FAVORITES)),
             
             const SizedBox(height: 40),
             
@@ -77,21 +75,28 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildProfileMenu(IconData icon, String title) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+  // Widget Helper yang sudah dimodifikasi dengan InkWell (efek sentuhan)
+  Widget _buildProfileMenu(IconData icon, String title, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.textPrimary),
-          const SizedBox(width: 16),
-          Expanded(child: Text(title, style: AppTextStyles.productTitle.copyWith(fontSize: 14))),
-          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
-        ],
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: AppColors.textPrimary),
+              const SizedBox(width: 16),
+              Expanded(child: Text(title, style: AppTextStyles.productTitle.copyWith(fontSize: 14))),
+              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+            ],
+          ),
+        ),
       ),
     );
   }

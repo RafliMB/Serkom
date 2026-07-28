@@ -7,8 +7,14 @@ class RegisterController extends GetxController {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController(); // Controller baru
   
   var isLoading = false.obs;
+  
+  // State untuk visibilitas password
+  var isObscurePassword = true.obs;
+  var isObscureConfirmPassword = true.obs; // State baru untuk konfirmasi password
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirestoreService _firestoreService = FirestoreService();
 
@@ -17,6 +23,7 @@ class RegisterController extends GetxController {
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
+    confirmPasswordController.dispose(); // Pastikan untuk di-dispose
     super.onClose();
   }
 
@@ -24,11 +31,26 @@ class RegisterController extends GetxController {
     final name = nameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+    // Validasi 1: Cek apakah ada kolom yang kosong
+    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       Get.snackbar(
         'Error', 
         'Semua kolom wajib diisi!',
+        backgroundColor: const Color(0xFFFF6951),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
+
+    // Validasi 2: Cek apakah password dan konfirmasi password cocok
+    if (password != confirmPassword) {
+      Get.snackbar(
+        'Error', 
+        'Password dan Konfirmasi Password tidak cocok!',
         backgroundColor: const Color(0xFFFF6951),
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,

@@ -6,9 +6,16 @@ import '../../../data/services/firestore_service.dart';
 class CartController extends GetxController {
   final FirestoreService _firestoreService = FirestoreService();
 
-  // Membaca stream dari keranjang pengguna aktif
-  Stream<QuerySnapshot> getCartStream() {
-    return _firestoreService.getCartStream();
+  var cartItems = <QueryDocumentSnapshot>[].obs;
+  var isLoading = true.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    cartItems.bindStream(_firestoreService.getCartStream().map((query) {
+      isLoading.value = false;
+      return query.docs;
+    }));
   }
 
   void increaseQty(String docId, int currentQty) {
@@ -25,8 +32,8 @@ class CartController extends GetxController {
     _firestoreService.removeCartItem(docId);
   }
 
-  void goToCheckout(List<QueryDocumentSnapshot> cartDocs) {
-    if (cartDocs.isEmpty) {
+  void goToCheckout() {
+    if (cartItems.isEmpty) {
       Get.snackbar('Keranjang Kosong', 'Tambahkan produk ke keranjang terlebih dahulu.', backgroundColor: const Color(0xFFFF6951), colorText: const Color(0xFFFFFFFF));
       return;
     }
@@ -34,13 +41,12 @@ class CartController extends GetxController {
     double total = 0.0;
     List<Map<String, dynamic>> items = [];
 
-    for (var doc in cartDocs) {
+    for (var doc in cartItems) {
       var data = doc.data() as Map<String, dynamic>;
       total += (data['price'] * data['qty']);
       items.add(data);
     }
 
-    // Arahkan ke Checkout dengan membawa payload
     Get.toNamed('/checkout', arguments: {
       'items': items,
       'total': total,

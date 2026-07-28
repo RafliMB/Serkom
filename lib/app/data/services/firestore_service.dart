@@ -32,12 +32,18 @@ class FirestoreService {
   }
 
   Future<void> createOrder(Map<String, dynamic> orderData) async {
-    await _db.collection('orders').add(orderData);
-    // Clear cart after checkout
+    WriteBatch batch = _db.batch();
+
+    DocumentReference orderRef = _db.collection('orders').doc(); 
+    batch.set(orderRef, orderData);
+
     var cartDocs = await _db.collection('users').doc(uid).collection('carts').get();
+
     for (var doc in cartDocs.docs) {
-      await doc.reference.delete();
+      batch.delete(doc.reference);
     }
+
+    await batch.commit();
   }
   
   Future<void> toggleFavorite(int productId) async {
